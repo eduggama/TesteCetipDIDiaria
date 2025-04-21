@@ -1,8 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using OpenQA.Selenium;
+﻿using OpenQA.Selenium;
 using OpenQA.Selenium.Edge;
-using System.Reflection.Metadata;
-using System.Xml.Linq;
 
 namespace TesteCetipDIDiaria
 {
