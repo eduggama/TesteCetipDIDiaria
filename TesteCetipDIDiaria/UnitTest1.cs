@@ -98,8 +98,9 @@ namespace TesteCetipDIDiaria
                 {
                     Console.WriteLine("Iniciando o download...");
                     // tentar fazer o download do arquivo 3 vezes
-                    for (int i = 0; i < 3; i++)
+                    for (int i = 0; i < 5; i++)
                     {
+                        Console.WriteLine($"Tentativa...{i}");
                         try
                         {
                             byte[] fileBytes = await client.GetByteArrayAsync(fileUrl);
@@ -110,11 +111,12 @@ namespace TesteCetipDIDiaria
                         catch (HttpRequestException ex)
                         {
                             Console.WriteLine($"Tentativa {i + 1} falhou: {ex.Message}");
-                            if (i == 2)
-                            {
-                                throw;
-                            }
+                            //if (i == 2)
+                            //{
+                            //    throw;
+                            //}
                         }
+                        
                         await Task.Delay(2000); // Espera 2 segundos antes de tentar novamente
                     }
                     
