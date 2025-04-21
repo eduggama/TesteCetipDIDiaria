@@ -1,4 +1,5 @@
-﻿using OpenQA.Selenium;
+﻿using Microsoft.Extensions.DependencyInjection;
+using OpenQA.Selenium;
 using OpenQA.Selenium.Edge;
 using System.Reflection.Metadata;
 using System.Xml.Linq;
@@ -92,39 +93,32 @@ namespace TesteCetipDIDiaria
     {
         public static async Task DownloadFileAsync(string fileUrl, string destinationPath)
         {
-            using (HttpClient client = new HttpClient())
+            var numeroTentativas = 5;
+            for (int i = 0; i < numeroTentativas; i++)
             {
-                try
+                //utilizar o Httpclientfactory
+
+                using (var client = new HttpClient()) // Simplified 'new' expression and replaced HttpClientFactory with HttpClient
                 {
-                    Console.WriteLine("Iniciando o download...");
-                    // tentar fazer o download do arquivo 3 vezes
-                    for (int i = 0; i < 5; i++)
+                    try
                     {
-                        Console.WriteLine($"Tentativa...{i}");
-                        try
-                        {
-                            byte[] fileBytes = await client.GetByteArrayAsync(fileUrl);
-                            Console.WriteLine($"Download concluído. Arquivo salvo em: {destinationPath}");
-                            await File.WriteAllBytesAsync(destinationPath, fileBytes);
-                            return;
-                        }
-                        catch (HttpRequestException ex)
-                        {
-                            Console.WriteLine($"Tentativa {i + 1} falhou: {ex.Message}");
-                            //if (i == 2)
-                            //{
-                            //    throw;
-                            //}
-                        }
-                        
-                        await Task.Delay(2000); // Espera 2 segundos antes de tentar novamente
+                        Console.WriteLine("Iniciando o download...");
+                        byte[] fileBytes = await client.GetByteArrayAsync(fileUrl);
+                        Console.WriteLine($"Download concluído. Arquivo salvo em: {destinationPath}");
+                        await File.WriteAllBytesAsync(destinationPath, fileBytes);
+                        return;
                     }
-                    
+                    catch (HttpRequestException ex)
+                    {
+                        Console.WriteLine($"Tentativa {i + 1} falhou: {ex.Message}");
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("Erro ao fazer o download: " + ex.Message);
+                    }
                 }
-                catch (Exception ex)
-                {
-                    Console.WriteLine("Erro ao fazer o download: " + ex.Message);
-                }
+                // Aguardar 5 segundos antes de tentar novamente
+                await Task.Delay(5000);
             }
         }
     }
